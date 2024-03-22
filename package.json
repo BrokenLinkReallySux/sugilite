@@ -1,0 +1,28 @@
+{
+	"name": "sugilite",
+	"main": "index.js",
+	"exports": {
+		".": "./index.js",
+		"./factory": "./factory.js"
+	},
+	"files": [
+		"index.js",
+		"package.json",
+		"factory.js",
+		"README.md"
+	],
+	"version": "0.0.1",
+	"author": {
+		"name": "Adi Fehringer"
+	},
+	"keywords": [
+		"framework",
+		"ui",
+		"jquery"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"jquery": "^3.7.1",
+		"jsdom": "^24.0.0"
+	}
+}

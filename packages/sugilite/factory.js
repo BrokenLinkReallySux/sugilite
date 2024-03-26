@@ -1,3 +1,9 @@
+/// <reference types="./index.d.ts" />
+/**
+ * @file factory.js
+ * @requires import("jquery")
+ */
+
 function factory(exports, isBrowser, window, _$) {
 	"use strict";
 	/** @typedef {(props: (Object<string, *>)) => JQuery} Component */
@@ -10,17 +16,12 @@ function factory(exports, isBrowser, window, _$) {
 		context: Symbol.for("sugilite.context"),
 		slot: Symbol.for("sugilite.slot"),
 	};
-	const ACCESS = {
-		type: Symbol.for("sugilite.accessor.type"),
-		props: Symbol.for("sugilite.accessor.props"),
-		tag: Symbol.for("sugilite.accessor.tag"),
-		children: Symbol.for("sugilite.accessor.children"),
-	};
+
 	let $ = _$;
 
 	/**
 	 * Returns a jQuery object, given properties and children.
-	 * @example Sugilite.c()
+	 * @example Sugilite.c("h1", null, "Hello World");
 	 * @returns {JQuery}
 	 * @param {null | Object<string, *>} props
 	 * @param {...SugiliteNode} children
@@ -32,17 +33,23 @@ function factory(exports, isBrowser, window, _$) {
 		} else if (typeof tag === "string") {
 			let el = window.document.createElement(tag);
 			if (props !== null && typeof props === "object") {
-				const specialProps = ["css", "ref", "bindVal$"];
+				const specialProps = ["css$", "bindVal$", "className", "htmlFor"];
 				const evRegex = /^ev\$([a-z]+)$/;
 				if (isBrowser) {
 					Object.keys(props)
-						.filter((p) => evRegex.test(p))
-						.forEach((prop) => {
+						.filter(p => evRegex.test(p))
+						.forEach(prop => {
 							$(el).on(prop.replace(evRegex, "$1"), props[prop]);
 						});
 					if ("css" in props && typeof props.css === "object") {
 						$(el).css(props.css);
 					}
+				}
+				if ("className" in props) {
+					el.className = props.className;
+				}
+				if ("htmlFor" in props) {
+					el.htmlFor = props.htmlFor;
 				}
 				if ("bindVal$" in props) {
 					if (!Signal.is(props.bindVal$)) {
@@ -60,20 +67,22 @@ function factory(exports, isBrowser, window, _$) {
 					}
 				}
 				Object.keys(props)
-					.filter((p) => !specialProps.includes(p) && !evRegex.test(p))
-					.forEach((prop) => {
+					.filter(p => !specialProps.includes(p) && !evRegex.test(p))
+					.forEach(prop => {
 						el.setAttribute(
 							prop.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(),
 							props[prop]
 						);
 					});
 			}
-			children.forEach((child) => {
+			children.forEach(child => {
 				if (["boolean", "string", "number", "float"].includes(typeof child)) {
 					$(el).append(window.document.createTextNode(String(child)));
 				} else if (Signal.is(child)) {
+					// @ts-ignore
 					let text = window.document.createTextNode(child.value);
 					$(el).append(text);
+					// @ts-ignore
 					child.effect(() => (text.textContent = child.value));
 				} else {
 					$(el).append(child);
@@ -88,17 +97,19 @@ function factory(exports, isBrowser, window, _$) {
 
 	/**
 	 * @example Sugilite.f(Sugilite.c("h1", null, "hello"), Sugilite.c("h1", null, "world"))
-	 * @param  {...SugiliteNode} children
+	 * @param  {{ children: SugiliteNode[] }} props
 	 * @returns {JQuery<DocumentFragment>} A fragment
 	 */
-	function f(...children) {
+	function f({ children }) {
 		let frag = window.document.createDocumentFragment();
-		children.forEach((child) => {
+		children.forEach(child => {
 			if (["boolean", "string", "number", "float"].includes(typeof child)) {
 				$(frag).append(window.document.createTextNode(String(child)));
 			} else if (Signal.is(child)) {
+				// @ts-ignore
 				let text = window.document.createTextNode(child.value);
 				$(frag).append(text);
+				// @ts-ignore
 				child.effect(() => (text.textContent = child.value));
 			} else {
 				$(frag).append(child);
@@ -137,7 +148,7 @@ function factory(exports, isBrowser, window, _$) {
 		set value(update) {
 			if (isBrowser) {
 				this.#value = update;
-				this.#effects.forEach((effect) => effect());
+				this.#effects.forEach(effect => effect());
 			}
 		}
 
@@ -180,7 +191,7 @@ function factory(exports, isBrowser, window, _$) {
 
 	let info = {};
 	Object.defineProperty(info, "version", {
-		value: "0.0.1",
+		value: "0.0.2",
 		writable: false,
 	});
 	Object.defineProperty(info, "browserDetected", {

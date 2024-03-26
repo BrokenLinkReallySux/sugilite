@@ -1,3 +1,9 @@
+/// <reference types="./index.d.ts" />
+/**
+ * @file index.js
+ * @requires jquery
+ */
+
 (function (global, factory) {
 	"use strict";
 	const isBrowser = typeof window !== "undefined" && "document" in window;
@@ -7,10 +13,13 @@
 				const { JSDOM } = require("jsdom");
 				return new JSDOM().window;
 		  })();
+	// @ts-ignore
 	if (isBrowser && !global.jQuery && typeof module !== "object") {
+		// @ts-ignore
 		global.createSugilite = function (jq, undef = true) {
 			let exports = {};
 			factory(exports, isBrowser, win, jq);
+			// @ts-ignore
 			if (undef) global.createSugilite = undefined;
 			return Object.freeze(exports);
 		};
@@ -18,7 +27,7 @@
 	}
 	const $ = isBrowser
 		? typeof module === "object"
-			? require("jquery")
+			? require("jquery") // @ts-ignore
 			: global.jQuery
 		: require("jquery")(win);
 
@@ -30,12 +39,15 @@
 		console.log("using cjs build of sugilite");
 		return;
 	}
+	// @ts-ignore
 	if (typeof define === "function" && define.amd) {
+		// @ts-ignore
 		define("sugilite", [], () => Object.freeze(exports));
 		console.log("using amd build of sugilite");
 		return;
 	} else {
 		console.log("using browser global build of sugilite");
+		// @ts-ignore
 		global.Sugilite = Object.freeze(exports);
 	}
 })(
@@ -53,17 +65,12 @@
 			context: Symbol.for("sugilite.context"),
 			slot: Symbol.for("sugilite.slot"),
 		};
-		const ACCESS = {
-			type: Symbol.for("sugilite.accessor.type"),
-			props: Symbol.for("sugilite.accessor.props"),
-			tag: Symbol.for("sugilite.accessor.tag"),
-			children: Symbol.for("sugilite.accessor.children"),
-		};
+
 		let $ = _$;
 
 		/**
 		 * Returns a jQuery object, given properties and children.
-		 * @example Sugilite.c()
+		 * @example Sugilite.c("h1", null, "Hello World");
 		 * @returns {JQuery}
 		 * @param {null | Object<string, *>} props
 		 * @param {...SugiliteNode} children
@@ -75,17 +82,23 @@
 			} else if (typeof tag === "string") {
 				let el = window.document.createElement(tag);
 				if (props !== null && typeof props === "object") {
-					const specialProps = ["css", "ref", "bindVal$"];
+					const specialProps = ["css$", "bindVal$", "className", "htmlFor"];
 					const evRegex = /^ev\$([a-z]+)$/;
 					if (isBrowser) {
 						Object.keys(props)
-							.filter((p) => evRegex.test(p))
-							.forEach((prop) => {
+							.filter(p => evRegex.test(p))
+							.forEach(prop => {
 								$(el).on(prop.replace(evRegex, "$1"), props[prop]);
 							});
 						if ("css" in props && typeof props.css === "object") {
 							$(el).css(props.css);
 						}
+					}
+					if ("className" in props) {
+						el.className = props.className;
+					}
+					if ("htmlFor" in props) {
+						el.htmlFor = props.htmlFor;
 					}
 					if ("bindVal$" in props) {
 						if (!Signal.is(props.bindVal$)) {
@@ -103,20 +116,22 @@
 						}
 					}
 					Object.keys(props)
-						.filter((p) => !specialProps.includes(p) && !evRegex.test(p))
-						.forEach((prop) => {
+						.filter(p => !specialProps.includes(p) && !evRegex.test(p))
+						.forEach(prop => {
 							el.setAttribute(
 								prop.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(),
 								props[prop]
 							);
 						});
 				}
-				children.forEach((child) => {
+				children.forEach(child => {
 					if (["boolean", "string", "number", "float"].includes(typeof child)) {
 						$(el).append(window.document.createTextNode(String(child)));
 					} else if (Signal.is(child)) {
+						// @ts-ignore
 						let text = window.document.createTextNode(child.value);
 						$(el).append(text);
+						// @ts-ignore
 						child.effect(() => (text.textContent = child.value));
 					} else {
 						$(el).append(child);
@@ -131,17 +146,19 @@
 
 		/**
 		 * @example Sugilite.f(Sugilite.c("h1", null, "hello"), Sugilite.c("h1", null, "world"))
-		 * @param  {...SugiliteNode} children
+		 * @param  {{ children: SugiliteNode[] }} props
 		 * @returns {JQuery<DocumentFragment>} A fragment
 		 */
-		function f(...children) {
+		function f({ children }) {
 			let frag = window.document.createDocumentFragment();
-			children.forEach((child) => {
+			children.forEach(child => {
 				if (["boolean", "string", "number", "float"].includes(typeof child)) {
 					$(frag).append(window.document.createTextNode(String(child)));
 				} else if (Signal.is(child)) {
+					// @ts-ignore
 					let text = window.document.createTextNode(child.value);
 					$(frag).append(text);
+					// @ts-ignore
 					child.effect(() => (text.textContent = child.value));
 				} else {
 					$(frag).append(child);
@@ -180,7 +197,7 @@
 			set value(update) {
 				if (isBrowser) {
 					this.#value = update;
-					this.#effects.forEach((effect) => effect());
+					this.#effects.forEach(effect => effect());
 				}
 			}
 
@@ -223,7 +240,7 @@
 
 		let info = {};
 		Object.defineProperty(info, "version", {
-			value: "0.0.1",
+			value: "0.0.2",
 			writable: false,
 		});
 		Object.defineProperty(info, "browserDetected", {

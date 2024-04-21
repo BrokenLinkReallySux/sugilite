@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Sugilite AMD Demo</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+		<script>
+			requirejs.config({
+				paths: {
+					jquery: "https://code.jquery.com/jquery-3.7.1.min",
+					sugilite: "../../packages/sugilite/sugilite.amd",
+					htm: "https://unpkg.com/htm@3.1.1/dist/htm.umd",
+				},
+				map: {
+					"*": {
+						jquery: "scripts/jq-private",
+					},
+					"scripts/jq-private": {
+						jquery: "jquery",
+					},
+				},
+			});
+			requirejs(["./scripts/main"]);
+		</script>
+	</body>
+</html>

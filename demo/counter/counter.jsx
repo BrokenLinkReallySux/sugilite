@@ -1,6 +1,6 @@
 /** @jsx sugilite.c */
 /** @jsxFrag sugilite.f */
-import sugilite from "../../packages/sugilite/";
+import sugilite from "../../packages/sugilite";
 import $ from "jquery";
 
 function App() {
@@ -13,5 +13,4 @@ function App() {
 		</>
 	);
 }
-
 $("#root").append(<App />);

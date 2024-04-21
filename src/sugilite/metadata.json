@@ -1,0 +1,29 @@
+{
+	"name": "sugilite",
+	"main": "sugilite.cjs.js",
+	"exports": {
+		".": "./sugilite.cjs.js"
+	},
+	"files": [
+		"sugilite.cjs.js",
+		"sugilite.umd.js",
+		"sugilite.amd.js",
+		"sugilite.amd-named.js",
+		"sugilite.esm.mjs",
+		"sugilite.umd.min.js",
+		"package.json",
+		"README.md",
+		"index.d.ts",
+		"0.0.2-index.js",
+		"CHANGELOG.md"
+	],
+	"author": {
+		"name": "Adi Fehringer"
+	},
+	"keywords": ["framework", "ui", "jquery"],
+	"license": "MIT",
+	"version": "0.1.1",
+	"types": "index.d.ts",
+	"description": "A UI Component framework using jquery",
+	"unpkg": "./sugilite.umd.min.js"
+}

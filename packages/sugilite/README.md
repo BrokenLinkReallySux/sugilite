@@ -1,7 +1,7 @@
 # Sugilite
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![npm: 0.1.1](https://img.shields.io/badge/npm-0.1.1-B30000.svg?style=flat-square)](https://npmjs.org/package/sugilite)
+[![npm: 0.1.2](https://img.shields.io/badge/npm-0.1.2-B30000.svg?style=flat-square)](https://npmjs.org/package/sugilite)
 [![github](https://img.shields.io/badge/github-orange.svg?style=flat-square)](https://github.com/BrokenLinkReallySux/sugilite)
 
 Sugilite is a frontend javascript ui library based on React, and powered by jQuery.

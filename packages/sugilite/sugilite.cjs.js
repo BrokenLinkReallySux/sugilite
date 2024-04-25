@@ -1,6 +1,7 @@
 'use strict';
 
-/// <reference types="./index.d.ts" />
+/// <reference types="./index" />
+"use strict";
 const isBrowser = typeof window !== "undefined" && "document" in window;
 (function (factory) {
 	if (isBrowser) {
@@ -12,8 +13,6 @@ const isBrowser = typeof window !== "undefined" && "document" in window;
 	}
 })(function (window, $) {
 	
-
-Object.defineProperty(exports, '__esModule', { value: true });
 
 class Signal {
 	#effects = [];
@@ -266,15 +265,12 @@ function Patience({ children, fallback = null }) {
 	return contentslot.content;
 }
 
-var sugilite = { c, f, Signal, signal, Slot, slot, Case, Each, Patience };
-
 exports.Case = Case;
 exports.Each = Each;
 exports.Patience = Patience;
 exports.Signal = Signal;
 exports.Slot = Slot;
 exports.c = c;
-exports.default = sugilite;
 exports.f = f;
 exports.signal = signal;
 exports.slot = slot;

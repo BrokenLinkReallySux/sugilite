@@ -1,5 +1,6 @@
-/// <reference types="./index.d.ts" />
+/// <reference types="./index" />
 (function (global, factory) {
+	"use strict";
 	const isBrowser = typeof window !== "undefined" && "document" in window;
 	if (isBrowser && typeof define === "function" && define.amd) {
 		define(["jquery", "exports"], ($, exports) =>
@@ -20,6 +21,7 @@
 })(
 	typeof window !== "undefined" ? window : this,
 	function (window, $, isBrowser, exports) {
+		"use strict";
 		// CODE GOES HERE
 	}
 );

@@ -2,7 +2,15 @@
 	"name": "sugilite",
 	"main": "sugilite.cjs.js",
 	"exports": {
-		".": "./sugilite.cjs.js"
+		".": {
+			"default": "./sugilite.umd.js",
+			"node": "./sugilite.cjs.js"
+		},
+		"./jsx-runtime": {
+			"require": "./jsx-runtime.js",
+			"import": "./jsx-runtime.mjs",
+			"default": "./jsx-runtime.min.js"
+		}
 	},
 	"files": [
 		"sugilite.cjs.js",
@@ -15,7 +23,11 @@
 		"README.md",
 		"index.d.ts",
 		"0.0.2-index.js",
-		"CHANGELOG.md"
+		"CHANGELOG.md",
+		"jsx-runtime.js",
+		"jsx-runtime.mjs",
+		"jsx-runtime.min.mjs",
+		"jsx-runtime.min.js"
 	],
 	"author": {
 		"name": "Adi Fehringer"

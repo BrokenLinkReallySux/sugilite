@@ -1,5 +1,6 @@
 /// <reference types="./index" />
 import $ from "jquery";
+("use strict");
 const isBrowser = true;
 
 
@@ -254,6 +255,4 @@ function Patience({ children, fallback = null }) {
 	return contentslot.content;
 }
 
-var sugilite = { c, f, Signal, signal, Slot, slot, Case, Each, Patience };
-
-export { Case, Each, Patience, Signal, Slot, c, sugilite as default, f, signal, slot };
+export { Case, Each, Patience, Signal, Slot, c, f, signal, slot };

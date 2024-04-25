@@ -1,10 +1,7 @@
-'use strict';
+import $ from 'jquery';
 
 /// <reference types="./index" />
-define(["jquery", "exports"], function ($, exports) {
-	"use strict";
-	const isBrowser = true;
-	
+
 
 class Signal {
 	#effects = [];
@@ -30,27 +27,12 @@ class Signal {
 	}
 
 	set value(update) {
-		if (isBrowser) {
+		{
 			this.#value = update;
 			this.#effects.forEach(effect => effect());
 		}
 	}
 }
-
-function signal(inital) {
-	return new Signal(inital);
-}
-
-signal.depends = function (deps, callback) {
-	const result = new Signal(callback());
-	deps.forEach(dep => {
-		if (!dep instanceof Signal) {
-			throw new Error("dependencies must be a signal");
-		}
-		dep.effect(() => (result.value = callback()));
-	});
-	return result;
-};
 
 class Slot {
 	#effects = [];
@@ -62,16 +44,12 @@ class Slot {
 		return this.#contents;
 	}
 	set content(update) {
-		if (isBrowser) {
+		{
 			this.#contents.replaceWith(update);
 			this.#contents = update;
 			this.#effects.forEach(effect => effect());
 		}
 	}
-}
-
-function slot(inital) {
-	return new Slot(inital);
 }
 
 function filterChildren(child, el) {
@@ -100,7 +78,7 @@ function c(tag, props, ...children) {
 		if (props !== null && typeof props === "object") {
 			const specialProps = ["css$", "bindVal$", "className", "htmlFor"];
 			const evRegex = /^ev\$([a-z]+)$/;
-			if (isBrowser) {
+			{
 				Object.keys(props)
 					.filter(p => evRegex.test(p))
 					.forEach(prop => {
@@ -121,7 +99,7 @@ function c(tag, props, ...children) {
 					throw new Error("bindVal$ must be a signal");
 				}
 				$(el).val(props.bindVal$.value);
-				if (isBrowser) {
+				{
 					$(el).on("input", function () {
 						props.bindVal$.value = $(this).val();
 					});
@@ -174,98 +152,38 @@ function f({ children }) {
 	return $(frag);
 }
 
-function Case({ children, predicate }) {
-	if (!predicate instanceof Signal) {
-		throw new Error("'predicate' must be a boolean signal");
+function jsx(tag, props) {
+	if (typeof tag === "undefined") {
+		throw new Error(
+			"the tag passed to sugilite's jsx factory was undefined. perhaps you used a component from another file without importing it?"
+		);
 	}
-	if (typeof predicate.value !== "boolean") {
-		throw new Error("'predicate' must be a boolean signal");
+	if (typeof tag !== "function" && typeof tag !== "string") {
+		throw new Error("tag must be a function or a string");
 	}
-	if (children.length !== 2) {
-		throw new Error("the 'Case' component can take exactly two children");
+
+	let passedprops;
+	if (props === null) ; else {
+		passedprops = {};
+		Object.keys(props).forEach(k => {
+			if (k !== "children") passedprops[k] = props[k];
+		});
 	}
-	const frag = c(f, null, ...children);
-	if (predicate.value === true) {
-		children[1].hide();
-	} else {
-		children[0].hide();
+
+	if ("children" in props) {
+		return c(tag, passedprops, ...Array(props.children).flat());
 	}
-	predicate.effect(() => {
-		if (predicate.value === true) {
-			children[1].hide();
-			children[0].show();
-		} else {
-			children[0].hide();
-			children[1].show();
-		}
-	});
-	return frag;
+
+	return c(tag, passedprops);
 }
 
-function Each({ children, array, wrapper = "div" }) {
-	if (!array instanceof Signal) {
-		throw new Error("the 'array' attribute must be an array signal");
-	}
-	if (!Array.isArray(array.value)) {
-		throw new Error("the 'array' attribute must be an array signal");
-	}
-	if (children.length !== 1) {
-		throw new Error(
-			"the 'Each' compononent takes only one child, which should be a function"
-		);
-	}
-	if (typeof children[0] !== "function") {
-		throw new Error(
-			"the 'Each' compononent takes only one child, which should be a function"
-		);
-	}
-	if (
-		typeof wrapper !== "string" &&
-		typeof wrapper !== "function" &&
-		!(typeof wrapper === "object" && "jquery" in wrapper)
-	) {
-		throw new Error(
-			"the 'wrapper' attribute must be a component, string, or jquery object"
-		);
-	}
-	const frag = document.createDocumentFragment();
-	frag.append(
-		...array.value.map((v, i, a) => c(f, null, children[0](v, i, a))[0])
-	);
-	let node;
-	if (typeof wrapper === "object") {
-		node = wrapper;
-		wrapper.append(frag);
-	} else {
-		node = c(wrapper, null, $(frag));
-	}
-	function loop() {
-		frag.replaceChildren(
-			...array.value.map((v, i, a) => c(f, null, children[0](v, i, a))[0])
-		);
-		node[0].replaceChildren(frag);
-	}
-	array.effect(loop);
-	return node;
+function App() {
+  return jsx(f, {
+    children: [jsx("h1", {
+      children: "hello"
+    }), jsx("h2", {
+      children: "world"
+    })]
+  });
 }
-
-function Patience({ children, fallback = null }) {
-	const contentslot = slot(fallback || $(document.createTextNode("")));
-	Promise.all(children).then(values => {
-		contentslot.content = c(f, null, ...values);
-	});
-	return contentslot.content;
-}
-
-exports.Case = Case;
-exports.Each = Each;
-exports.Patience = Patience;
-exports.Signal = Signal;
-exports.Slot = Slot;
-exports.c = c;
-exports.f = f;
-exports.signal = signal;
-exports.slot = slot;
-
-
-});
+$("#root").append(jsx(App, {}));

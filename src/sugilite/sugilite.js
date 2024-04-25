@@ -7,4 +7,3 @@ import Each from "./components/Each";
 import Patience from "./components/Patience";
 
 export { c, f, Signal, signal, Slot, slot, Case, Each, Patience };
-export default { c, f, Signal, signal, Slot, slot, Case, Each, Patience };

@@ -1,4 +1,5 @@
-/// <reference types="./index.d.ts" />
+/// <reference types="./index" />
+"use strict";
 const isBrowser = typeof window !== "undefined" && "document" in window;
 (function (factory) {
 	if (isBrowser) {
